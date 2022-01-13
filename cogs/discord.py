@@ -3,6 +3,9 @@ import discord
 from io import BytesIO
 from utils import default
 from discord.ext import commands
+import srcomapi, srcomapi.datatypes as dt
+import datetime
+
 
 
 class Discord_Info(commands.Cog):
@@ -85,7 +88,7 @@ class Discord_Info(commands.Cog):
             embed.add_field(name="Owner", value=ctx.guild.owner, inline=True)
             embed.add_field(name="Region", value=ctx.guild.region, inline=True)
             embed.add_field(name="Created", value=default.date(ctx.guild.created_at, ago=True), inline=True)
-            await ctx.send(content=f"ℹ information about **{ctx.guild.name}**", embed=embed)
+            await ctx.send(content=f"ℹ Information about **{ctx.guild.name}**", embed=embed)
 
     @server.command(name="avatar", aliases=["icon"])
     async def server_avatar(self, ctx):
@@ -121,6 +124,38 @@ class Discord_Info(commands.Cog):
         embed.add_field(name="Roles", value=show_roles, inline=False)
 
         await ctx.send(content=f"ℹ About **{user.id}**", embed=embed)
+
+    @commands.command()
+    @commands.guild_only()
+    async def runner(self, ctx, *, user: discord.Member = None):
+        """ Get user information"""
+        user = user or ctx.author
+
+        """Get runner infos from SRC API"""
+        api = srcomapi.SpeedrunCom(); api.debug = 1
+
+        runner_id =  api.get("users?lookup={}".format(user.name))[0]['id']
+
+        raw_PBs = api.get("users/{}/personal-bests?embed=category".format(runner_id))
+        runner_PBs = {}
+        for pb in raw_PBs:
+            category = dt.Category(api,data=pb['category']['data']).name
+            if category == 'Any% Warpless':
+                seeded = True if pb['run']['values']['e8m661ql'] == 'p12j3x4q' else False
+                if not seeded:
+                    runner_PBs['Warpless'] = pb
+            
+        
+        embed = discord.Embed(colour=user.top_role.colour.value)
+        embed.set_thumbnail(url=user.avatar)
+
+        embed.add_field(name="Name", value=user.name, inline=True)
+        embed.add_field(name="Warpless rank", value=runner_PBs["Warpless"]["place"], inline=True)
+        embed.add_field(name="Warpless PB", value=str(datetime.timedelta(seconds=runner_PBs["Warpless"]["run"]["times"]["primary_t"])), inline=True)
+
+        
+
+        await ctx.send(content=f"ℹ **{user}** speedrun profile", embed=embed)
 
 
 def setup(bot):
