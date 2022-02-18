@@ -132,7 +132,12 @@ class Discord_Info(commands.Cog):
         """Get runner infos from SRC API"""
         
         runner_PBs = get_runs(user)
-        
+
+        has_Dead_Cells_runs = len(runner_PBs) > 0
+
+        if not has_Dead_Cells_runs:
+            raise commands.errors.UserInputError(f"This runner doesn't have any Dead Cells PB. Good for them !")
+
         embeddings = dict(fields=[])
         embeddings["fields"].extend([{"name": "Category", "value": x, "inline": True} for x in runner_PBs.keys()])
         embeddings["fields"].extend([{"name": "Rank", "value": str(runner_PBs[x]["place"]), "inline": True} for x in runner_PBs.keys()])
@@ -141,7 +146,6 @@ class Discord_Info(commands.Cog):
         sort_embeddings(embeddings["fields"],len(runner_PBs.keys()))
 
         embed = discord.Embed.from_dict(embeddings)
-        
 
         await ctx.send(content=f"ℹ **{user}** speedrun profile", embed=embed)
 
@@ -170,9 +174,10 @@ def get_runs(runner):
     try:
         runner_id =  api.get("users?lookup={}".format(runner))[0]['id']
     except IndexError:
-        raise commands.errors.UserInputError(f"I haven't found this runner :pensive: \n Make sure you haven't mispelled their SRC username.")
-   
-  
+        raise commands.errors.UserInputError("I haven't found this runner :pensive:\n"
+                                            "Make sure you haven't mispelled their SRC username."
+                                            )
+
     raw_PBs = api.get("users/{}/personal-bests?embed=category".format(runner_id))
     runner_PBs = {}
     for pb in raw_PBs:
