@@ -9,11 +9,7 @@ import sys
 class Discord_Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = default.config()
-
-    async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.errors.UserInputError):
-            await ctx.send(f"Runner not found :pensive: Make sure you haven't mispelled their SRC username.")
+        self.config = default.config()        
 
     @commands.command()
     @commands.guild_only()
@@ -174,7 +170,7 @@ def get_runs(runner):
     try:
         runner_id =  api.get("users?lookup={}".format(runner))[0]['id']
     except IndexError:
-        raise commands.errors.UserInputError("Runner not found")
+        raise commands.errors.UserInputError(f"I haven't found this runner :pensive: \n Make sure you haven't mispelled their SRC username.")
    
   
     raw_PBs = api.get("users/{}/personal-bests?embed=category".format(runner_id))
