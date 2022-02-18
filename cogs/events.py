@@ -42,6 +42,9 @@ class Events(commands.Cog):
 
         elif isinstance(err, errors.CommandNotFound):
             pass
+        
+        elif isinstance(err, errors.UserInputError):
+            await ctx.send(err)
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
