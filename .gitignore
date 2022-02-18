@@ -104,5 +104,6 @@ ENV/
 # mypy
 .mypy_cache/
 
-#test notebook
+#tests
 test.ipynb
+test.py

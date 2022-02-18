@@ -1,17 +1,19 @@
 import discord
-
 from io import BytesIO
 from utils import default
 from discord.ext import commands
 import srcomapi, srcomapi.datatypes as dt
 import datetime
-
-
+import sys
 
 class Discord_Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = default.config()
+
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.errors.UserInputError):
+            await ctx.send(f"Runner not found :pensive: Make sure you haven't mispelled their SRC username.")
 
     @commands.command()
     @commands.guild_only()
@@ -127,36 +129,86 @@ class Discord_Info(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    async def runner(self, ctx, *, user: discord.Member = None):
+    async def runner(self, ctx, *, user):
         """ Get user information"""
         user = user or ctx.author
 
         """Get runner infos from SRC API"""
-        api = srcomapi.SpeedrunCom(); api.debug = 1
-
-        runner_id =  api.get("users?lookup={}".format(user.name))[0]['id']
-
-        raw_PBs = api.get("users/{}/personal-bests?embed=category".format(runner_id))
-        runner_PBs = {}
-        for pb in raw_PBs:
-            category = dt.Category(api,data=pb['category']['data']).name
-            if category == 'Any% Warpless':
-                seeded = True if pb['run']['values']['e8m661ql'] == 'p12j3x4q' else False
-                if not seeded:
-                    runner_PBs['Warpless'] = pb
-            
         
-        embed = discord.Embed(colour=user.top_role.colour.value)
-        embed.set_thumbnail(url=user.avatar)
+        runner_PBs = get_runs(user)
+        
+        embeddings = dict(fields=[])
+        embeddings["fields"].extend([{"name": "Category", "value": x, "inline": True} for x in runner_PBs.keys()])
+        embeddings["fields"].extend([{"name": "Rank", "value": str(runner_PBs[x]["place"]), "inline": True} for x in runner_PBs.keys()])
+        embeddings["fields"].extend([{"name": "Time", "value": str(datetime.timedelta(seconds=runner_PBs[x]["run"]["times"]["primary_t"])).rstrip("000"), "inline": True} for x in runner_PBs.keys()])
+        
+        sort_embeddings(embeddings["fields"],len(runner_PBs.keys()))
 
-        embed.add_field(name="Name", value=user.name, inline=True)
-        embed.add_field(name="Warpless rank", value=runner_PBs["Warpless"]["place"], inline=True)
-        embed.add_field(name="Warpless PB", value=str(datetime.timedelta(seconds=runner_PBs["Warpless"]["run"]["times"]["primary_t"])), inline=True)
-
+        embed = discord.Embed.from_dict(embeddings)
         
 
         await ctx.send(content=f"ℹ **{user}** speedrun profile", embed=embed)
 
+    @commands.command()
+    @commands.guild_only()
+    async def copypasta(self, ctx):
+        await ctx.send(content="i enjoy resetting 5000 times because this shit game didnt give me the level layout i wanted forcing to to try again until i finally get the perfect combination of everything i need, only to fuck up the run purely because my brain just couldnt resist the urge to go the wrong way in sepulcher. you know how frustrating this shit is? 'if i didnt get the key, that would have been sub 4' 'i got the first door, it was so close' like please and thank you ffs, lets not talk about passing 1/10 runs because pq is usually slow, just how many runs die to ramparts, the terrible level layout of stilt and trying to find sepulcher before you have to reset because it took you too long to do it, and sep which ive talked about, there are so many times sub 4 was literally there for me but i didnt get it. that is the most frustrating part - just how many runs ive thrown away to the very end of sepulcher, thats literally why i keep trying (because i know i can do it) but i have 0 patience anymore, i just want this to be over soon")
+
+
 
 def setup(bot):
     bot.add_cog(Discord_Info(bot))
+    
+def sort_embeddings(embeddings, nb_categories):
+    for i in range(nb_categories):
+        temp_value = embeddings.pop(nb_categories+i)
+        embeddings.insert(2*i+1,temp_value)
+
+    for i in range(nb_categories):
+        temp_value = embeddings.pop(nb_categories*2+i)
+        embeddings.insert(3*i+2,temp_value)
+
+def get_runs(runner):
+    api = srcomapi.SpeedrunCom(); api.debug = 1
+
+    try:
+        runner_id =  api.get("users?lookup={}".format(runner))[0]['id']
+    except IndexError:
+        raise commands.errors.UserInputError("Runner not found")
+   
+  
+    raw_PBs = api.get("users/{}/personal-bests?embed=category".format(runner_id))
+    runner_PBs = {}
+    for pb in raw_PBs:
+        game_is_main_dead_cells = pb['run']['game'] == 'nd2ee5ed'
+        game_is_extension_dead_cells = pb['run']['game'] == 'pdvzlp96'
+        game_is_not_dead_cells = not game_is_main_dead_cells and not game_is_extension_dead_cells  
+        
+        if game_is_not_dead_cells:
+            continue 
+        
+        category = dt.Category(api, data=pb['category']['data']).name
+        misc_category = category in ["4BC (obsolete)","Any% (Early Access)", "Fresh File (Early Access)", "Any% Seeded (obsolete)"]
+        
+        seeded = False
+        if game_is_main_dead_cells:
+            
+            if category == "Fresh File":
+                patch_is_21_and_higher = pb['run']['values']['6njzm5pl'] == 'mln9x50q'
+                category += " (2.1+)" if patch_is_21_and_higher else " (<2.1)"
+            
+            elif category == "5BC":
+                patch_is_23_and_higher = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
+                category += " (2.3+)" if patch_is_23_and_higher else " (<2.3)"
+            
+            seeded = pb['run']['values']['e8m661ql'] == 'p12j3x4q'
+        
+        if not game_is_main_dead_cells and len(pb['run']['values']) > 0:
+            seeded = pb['run']['values']['yn2wwp2n'] == 'klrknyo1'
+        
+        if seeded and not misc_category:
+            runner_PBs[category + " (Seeded)"] = pb
+        elif not seeded and not misc_category:
+            runner_PBs[category] = pb
+    
+    return runner_PBs
