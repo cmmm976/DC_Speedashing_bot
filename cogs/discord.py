@@ -37,8 +37,8 @@ class Discord_Info(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    async def givemeroles(self, ctx):
-        user = ctx.author
+    async def givemeroles(self, ctx, user : discord.Member = None):
+        user = user or ctx.author
 
         runner_PBs = get_runs(user)
 
@@ -48,7 +48,40 @@ class Discord_Info(commands.Cog):
             raise commands.errors.UserInputError("You don't have any verified Dead Cells run :pensive:\n"
                                                  "Go show them what you've got !")
 
+        simplified_PBs = {}
+        for category in runner_PBs.keys():
+            simplified_PBs[category] = {"Time": runner_PBs[category]["run"]["times"]["primary_t"], "Rank": runner_PBs[category]["place"]}
+
+        thresholds = {"Any% Warpless": {"Legend": 4*60, "Lightspeed IRL": 5*60, "Go Fast Club": 6*60}, 
+                    "Any% Warpless (Seeded)": {"Legend": 2.5*60, "Lightspeed IRL": 3*60, "Go Fast Club": 3.5*60}, 
+                    "Any% Warps": {"Legend": 50, "Lightspeed IRL": 60},
+                    "Fresh File (<2.1)": {"Legend": 14*60, "Lightspeed IRL": 15*60, "Go Fast Club": 17*60}, 
+                    "Fresh File (2.1+)": {"Legend": 11*60, "Lightspeed IRL": 12*60, "Go Fast Club": 13*60},
+                    "0-5BC Glitchless": {"Legend": 2.5*60*60, "Lightspeed IRL": 3*60*60}
+                    }
+
+        threshold_roles = {"Legend": False, "Lightspeed IRL": False, "Go Fast Club": False}
+        wr_roles = {"Any% WR": False}
+
+        for category in thresholds:
+            for role in threshold_roles:
+                if threshold_roles[role] != True:
+                    try:
+                        threshold_roles[role] = simplified_PBs[category]["Time"] < thresholds[category][role]
+                    except KeyError:
+                        continue 
         
+        roles = []
+        
+        for role in threshold_roles:
+            roles = [discord.utils.get(ctx.guild.roles, name=role) for role in threshold_roles if threshold_roles[role]]
+
+        print(roles)
+        
+        for role in roles:
+            await user.add_roles(role)
+
+        await ctx.send("Roles added successfully.")
     
     @commands.command()
     @commands.guild_only()
