@@ -5,4 +5,4 @@ services:
     container_name: "DC_Speedashing_bot.py"
     build: .
     volumes:
-      - ./config.json:/discord_bot/config.json
+      - ./config.json:/DC_Speedashing_bot/config.json
