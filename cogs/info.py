@@ -81,7 +81,7 @@ class Information(commands.Cog):
             print(activity)
 
             await streams_channel.send(content="{} **is streaming Dead Cells !**\n".format(user.mention,activity.name))
-            await streams_channel.send(content="{} - {}".format(activity.name,activity.url))
+            await streams_channel.send(content="**{}** - {}".format(activity.name,activity.url))
             await user.add_roles(streaming_role)
                 
 
