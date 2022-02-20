@@ -25,12 +25,12 @@ for file in os.listdir("cogs"):
         name = file[:-3]
         bot.load_extension(f"cogs.{name}")
 
-@tasks.loop(seconds=10)
+@tasks.loop(minutes=5)
 async def post_new_runs():
-    new_runs_channel = bot.get_channel(931584454156230687)
+    new_runs_channel = bot.get_channel(944942555102064660)
 
     newest_run = ''
-    with open('test.json') as f:
+    with open('newest_run.json') as f:
         file = json.load(f)
         newest_run = file["newest_run"]
 
@@ -39,7 +39,7 @@ async def post_new_runs():
     if  new_call != newest_run:
         print("New run !")
         newest_run = new_call
-        with open('newest.json', 'w') as outfile:
+        with open('newest_run.json', 'w') as outfile:
             json.dump({"newest_run": newest_run}, outfile)
         
         embed_run = discord.Embed.from_dict(dict(fields=[{"name": key, "value": newest_run[key], "inline": True} for key in newest_run]))
