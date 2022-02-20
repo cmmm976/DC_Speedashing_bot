@@ -57,6 +57,34 @@ class Information(commands.Cog):
 
         await ctx.send(content=f"ℹ About **{ctx.bot.user}**", embed=embed)
 
+    @commands.command(aliases=["streaming","stream"])
+    async def is_streaming(self, ctx, user : discord.Member = None):
+        """Will check if you or the user on argument streams Dead Cells and posts a message in #streams channel"""
+        user = user or ctx.author
+
+        streaming_role = discord.utils.get(ctx.guild.roles, id=945020788090765343)
+        streams_channel = self.bot.get_channel(386680735374901249)
+
+        user_activities = user.activities
+        activity = 0
+
+
+        if not len(user_activities) > 0:
+            raise Exception("no activity")
+
+        for activity in user_activities:
+            if activity.type is discord.ActivityType.streaming:
+                print(activity.type)
+                activity = activity
+
+        if activity.game == "Dead Cells":
+            print(activity)
+
+            await streams_channel.send(content="{} **is streaming Dead Cells !**\n".format(user.mention,activity.name))
+            await streams_channel.send(content="**{}** - {}".format(activity.name,activity.url))
+            await user.add_roles(streaming_role)
+                
+
 
 def setup(bot):
     bot.add_cog(Information(bot))
