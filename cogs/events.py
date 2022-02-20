@@ -91,6 +91,10 @@ class Events(commands.Cog):
     async def on_member_update(self, before, after):
         activity_type = None
         streaming_role = after.guild.get_role(945020788090765343)
+        streams_channel = self.bot.get_channel(386680735374901249)
+
+        after.user
+
         try:
             activity_type = after.activity.type
         except:
@@ -101,11 +105,12 @@ class Events(commands.Cog):
                 print(f"{after.display_name} has stopped streaming")
                 await after.remove_roles(streaming_role)
         else:
-            if streaming_role not in after.roles:
+            if streaming_role not in after.roles and after.activity.game == "Dead Cells":
                 # If they don't have the role, give it to them
                 # If they have it, we already know they're streaming so we don't need to do anything
                 print(f"{after.display_name} has started streaming")
-                await after.add_roles(streaming_role)
+                await streams_channel.send(content="{} **is streaming Dead Cells !**\n".format(after.mention, after.activity.name))
+                await streams_channel.send(content="{} - {}".format(after.activity.name, after.activity.url))
 
 
 def setup(bot):
