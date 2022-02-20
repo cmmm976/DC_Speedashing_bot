@@ -25,7 +25,7 @@ for file in os.listdir("cogs"):
         name = file[:-3]
         bot.load_extension(f"cogs.{name}")
 
-@tasks.loop(minutes=5)
+@tasks.loop(seconds=60)
 async def post_new_runs():
     new_runs_channel = bot.get_channel(944573175050690590)
 

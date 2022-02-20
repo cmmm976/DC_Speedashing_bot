@@ -87,6 +87,26 @@ class Events(commands.Cog):
         # Indicate that the bot has successfully booted up
         print(f"Ready: {self.bot.user} | Servers: {len(self.bot.guilds)}")
 
+    @commands.Cog.listener()
+    async def on_member_update(self, before, after):
+        activity_type = None
+        streaming_role = after.guild.get_role(945020788090765343)
+        try:
+            activity_type = after.activity.type
+        except:
+            pass
+        if not (activity_type is discord.ActivityType.streaming):
+            # User is doing something other than streaming
+            if streaming_role in after.roles:
+                print(f"{after.display_name} has stopped streaming")
+                await after.remove_roles(streaming_role)
+        else:
+            if streaming_role not in after.roles:
+                # If they don't have the role, give it to them
+                # If they have it, we already know they're streaming so we don't need to do anything
+                print(f"{after.display_name} has started streaming")
+                await after.add_roles(streaming_role)
+
 
 def setup(bot):
     bot.add_cog(Events(bot))
