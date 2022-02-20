@@ -27,7 +27,7 @@ for file in os.listdir("cogs"):
 
 @tasks.loop(minutes=5)
 async def post_new_runs():
-    new_runs_channel = bot.get_channel(944942555102064660)
+    new_runs_channel = bot.get_channel(944573175050690590)
 
     newest_run = ''
     with open('newest_run.json') as f:
@@ -66,7 +66,7 @@ async def before_post_new_runs():
     await bot.wait_until_ready()
     print("Ready to post new runs")
 
-post_new_runs.start()
+# post_new_runs.start()
 
 try:
     bot.run(config["token"])
