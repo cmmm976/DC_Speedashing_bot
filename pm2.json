@@ -1,9 +1,9 @@
 {
   "apps": [
     {
-      "name": "discord_bot.py",
+      "name": "DC_Speedashing_bot",
       "script": "index.py",
-      "interpreter": "python3.7",
+      "interpreter": "python3.9",
       "interpreter_args": "-u"
     }
   ]

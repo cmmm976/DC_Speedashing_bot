@@ -2,7 +2,8 @@ version: "3"
 
 services:
   bot:
-    container_name: "DC_Speedashing_bot.py"
+    container_name: "dc_speedashing_bot"
     build: .
     volumes:
-      - ./config.json:/DC_Speedashing_bot/config.json
+      - ./config.json:/dc_speedashing_bot/config.json
+    network_mode : bridge
