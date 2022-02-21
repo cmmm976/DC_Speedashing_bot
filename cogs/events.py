@@ -89,7 +89,6 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_presence_update(self, before, after):
-        activity_type = None
         streaming_role = after.guild.get_role(945020788090765343)
         streams_channel = self.bot.get_channel(386680735374901249)
 
@@ -117,7 +116,7 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         last_message = (await message.channel.history(limit=2).flatten())[1]
-        if message.channel.id == 386680735374901249 and last_message.content == message.content:
+        if (message.channel.id == 386680735374901249 or message.channel.id == 944573175050690590) and last_message.content == message.content:
             await message.delete()
 
 

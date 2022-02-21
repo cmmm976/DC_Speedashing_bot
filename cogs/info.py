@@ -50,12 +50,12 @@ class Information(commands.Cog):
             name=f"Developer{'' if len(self.config['owners']) == 1 else 's'}",
             value=", ".join([str(self.bot.get_user(x)) for x in self.config["owners"]])
         )
-        embed.add_field(name="Library", value="discord.py")
+        embed.add_field(name="Library", value="Pycord")
         embed.add_field(name="Servers", value=f"{len(ctx.bot.guilds)} ( avg: {avgmembers:,.2f} users/server )")
         embed.add_field(name="Commands loaded", value=len([x.name for x in self.bot.commands]))
         embed.add_field(name="RAM", value=f"{ramUsage:.2f} MB")
 
-        await ctx.send(content=f"ℹ About **{ctx.bot.user}**", embed=embed)
+        await ctx.send(content=f"ℹ About **{ctx.bot.user}** :henpog:", embed=embed)
 
     @commands.command(aliases=["streaming","stream"])
     async def is_streaming(self, ctx, user : discord.Member = None):
