@@ -17,7 +17,7 @@ First, invite your bot with this link : https://discord.com/api/oauth2/authorize
 ## Locally
 Open a terminal, navigate to the repo folder and launch index.py : `python index.py`
 
-## On a Docker container
+## In a Docker container
 [Docker](https://docs.docker.com/install/) allows you to run the bot 24/7.
 ```# Build and run the Dockerfile
 docker-compose up -d --build
@@ -30,8 +30,12 @@ docker-compose <command>
   logs    Check the logs made by the bot.
 ```
 # Features
+ * Runs 24/7 in a Cloud-hosted container
  * Posts new verified runs in a dedicated channel
  * Posts a runner PB through the !runner command
  * Posts a random copypasta through the !copypasta command
- * Runs 24/7 in a Cloud-hosted container
+ * Automatically posts streamers currently playing Dead Cells
+ * Posts a category world records through !wr commands
+ * Posts funny reactions to Dead Cells speedruns through !casul command
+ 
  
