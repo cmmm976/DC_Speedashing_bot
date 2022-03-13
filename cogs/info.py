@@ -77,12 +77,18 @@ class Information(commands.Cog):
                 print(activity.type)
                 activity = activity
 
-        if activity.game == "Dead Cells":
-            print(activity)
+                if activity.game == "Dead Cells":
+                    print(activity)
 
-            await streams_channel.send(content="{} **is streaming Dead Cells !**\n".format(user.mention,activity.name))
-            await streams_channel.send(content="**{}** - {}".format(activity.name,activity.url))
-            await user.add_roles(streaming_role)
+                    await streams_channel.send(content="{} **is streaming Dead Cells !**\n".format(user.mention,activity.name))
+                    await streams_channel.send(content="**{}** - {}".format(activity.name,activity.url))
+                    await user.add_roles(streaming_role)
+
+                else:
+                    await ctx.send(content="This user doesn't seem to stream Dead Cells :thinking:\nIf I am wrong, please tell them to change their stream category.")
+
+            else:
+                await ctx.send(content="This user doesn't seem to be streaming :thinking:\nIf I am wrong, please tell them to activate Streamer mode.")
                 
 
 

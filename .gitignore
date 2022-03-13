@@ -1,5 +1,6 @@
 # Custom
 config.json
+config.json.prod
 cogs/eval.py
 
 # Byte-compiled / optimized / DLL files
