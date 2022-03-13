@@ -49,7 +49,7 @@ async def post_new_runs():
         if runner_is_in_server:
             await new_runs_channel.send(
                 "**A new run has been verified !**\n"
-                "GG {} for PB ! :partying_face:".format(discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"])), embed=embed_run
+                "GG **<@{}>** for PB ! :partying_face:".format(discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"]).id), embed=embed_run
             )
         else:
             await new_runs_channel.send(
@@ -66,7 +66,7 @@ async def before_post_new_runs():
     await bot.wait_until_ready()
     print("Ready to post new runs")
 
-# post_new_runs.start()
+post_new_runs.start()
 
 try:
     bot.run(config["token"])
