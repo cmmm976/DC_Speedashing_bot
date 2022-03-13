@@ -1,6 +1,7 @@
 import discord
 import psutil
 import os
+import asyncio
 
 from datetime import datetime
 from discord.ext import commands
@@ -87,9 +88,17 @@ class Events(commands.Cog):
         # Indicate that the bot has successfully booted up
         print(f"Ready: {self.bot.user} | Servers: {len(self.bot.guilds)}")
 
+    
     @commands.Cog.listener()
-    @commands.cooldown(rate=1, per=3600*3, type=commands.BucketType.user)
     async def on_presence_update(self, before, after):
+        global cooldown
+        cooldown = []
+        if before in cooldown:
+            return
+        cooldown.append(before)
+        await asyncio.sleep(3600*2) # here you can change how long the cooldown should be
+        cooldown.remove(before)
+
         streaming_role = after.guild.get_role(945020788090765343)
         streams_channel = self.bot.get_channel(386680735374901249)
 
