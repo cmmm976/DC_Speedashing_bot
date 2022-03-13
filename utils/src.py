@@ -3,6 +3,38 @@ import srcomapi, srcomapi.datatypes as dt
 from discord.ext.commands import errors
 import datetime
 
+VALUES = {
+    "Seeded": "p12j3x4q",
+    "Unseeded": "z19e788q",
+    "Seeded (extensions)" : "klrknyo1",
+    "Unseeded (extensions)" : "jqz2kx2q",
+    "<2.1": "4qy90n4l",
+    "2.1+": "mln9x50q",
+    "<2.3": "z19kne8q",
+    "2.3+": "p12p7j4q",
+    
+}
+
+SUB_CATEGORIES = {
+    "Version": {"Fresh File": "6njzm5pl", "5BC": "ylp7pkrl"},
+    "Seeded": {"Main": "e8m661ql", "Extensions": "yn2wwp2n"}   
+}
+
+CATEGORIES = {
+    "Any% Warpless": "7kjp314k",
+    "Any% Warps": "xk9rz14k",
+    "Fresh File": "9d864o62",
+    "5BC": "9kv7g60k",
+}
+
+VARIABLES = {
+    "Any% Warpless": {"id": "7kjp314k", "sub_categories": {"Seeded": {"id": "e8m661ql", "values": {"Seeded": "p12j3x4q", "Unseeded": "z19e788q"}}} },
+    "Any% Warps": {"id": "xk9rz14k", "sub_categories": {"Seeded": {"id": "e8m661ql", "values": {"Seeded": "p12j3x4q", "Unseeded": "z19e788q"}}} },
+    "Fresh File": {"id": "9d864o62", "sub_categories": {"Seeded": {"id": "e8m661ql", "values": {"Seeded": "p12j3x4q", "Unseeded": "z19e788q"}}, "Version": {"id": "6njzm5pl", "values": {"<2.1": "4qy90n4l", "2.1+": "mln9x50q"}}} },
+    "5BC": {"id": "9kv7g60k", "sub_categories": {"Seeded": {"id": "e8m661ql", "values": {"Seeded": "p12j3x4q", "Unseeded": "z19e788q"}}, "Version": {"id": "6njzm5pl", "values": {"<2.3": "z19kne8q", "2.3+": "p12p7j4q"}}} }
+}
+
+
 def sort_embeddings(embeddings, nb_categories):
     for i in range(nb_categories):
         temp_value = embeddings.pop(nb_categories+i)
@@ -77,6 +109,54 @@ def get_new_runs():
         "Video Link": newest_run.videos["links"][0]['uri']
     }
     return result
+
+def get_category_WRs(user_category):
+
+    api = srcomapi.SpeedrunCom()
+    api.debug = 1
+
+    world_records = []
+   
+    category_id = CATEGORIES[user_category]
+    sub_categories = [ {"name" : sub_category[0], "id": sub_category[1]["id"] , "values": sub_category[1]["values"] } for sub_category in VARIABLES[user_category]["sub_categories"].items() ]
+    
+    if len(sub_categories) > 1:
+        for x in sub_categories[0]["values"]:
+            for y in sub_categories[1]["values"]:
+                try:
+                    wr = srcomapi.datatypes.Leaderboard(api, 
+                                                            api.get("leaderboards/{}/category/{}?top=1&var-{}={}&var-{}={}"
+                                                            .format("deadcells",category_id,sub_categories[0]["id"],sub_categories[0]["values"][x],
+                                                                    sub_categories[1]["id"],sub_categories[1]["values"][y]))).runs[0]["run"]
+                    world_records.append(wr)
+                except:
+                    print("No {} {} run found, proceeding".format(x,y))
+                    continue
+    else: 
+        for x in sub_categories[0]["values"]:
+                try:
+                    wr = srcomapi.datatypes.Leaderboard(api, 
+                                                            api.get("leaderboards/{}/category/{}?top=1&var-{}={}"
+                                                            .format("deadcells",category_id,sub_categories[0]["id"],sub_categories[0]["values"][x],
+                                                                    ))).runs[0]["run"]
+                    world_records.append(wr)
+                except:
+                    print("No {} run found, proceeding".format(x))
+                    continue
+            
+    #picking only relevant attributes
+    world_records = [{"Runner": wr.players[0].name, "Sub category": list(wr.values.items()), "Time": str(datetime.timedelta(seconds=wr.times["primary_t"])).rstrip("000"), "SRC link": wr.weblink, "Video link": wr.videos["links"][0]["uri"]} for wr in world_records]
+    
+    #replacing sub categories IDs by their names
+    for wr in world_records:
+        for index, value in enumerate(wr["Sub category"]):
+            wr["Sub category"][index] = {v: k for k, v in VALUES.items()}[value[1]]
+            try:
+                wr["Sub category"] = wr["Sub category"][0] + ", " + wr["Sub category"][1]
+            except:
+                wr["Sub category"] = wr["Sub category"][0]
+    
+    return world_records
 
 api = srcomapi.SpeedrunCom()
 api.debug = 1

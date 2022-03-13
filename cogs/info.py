@@ -89,6 +89,7 @@ class Information(commands.Cog):
 
             else:
                 await ctx.send(content="This user doesn't seem to be streaming :thinking:\nIf I am wrong, please tell them to activate Streamer mode.")
+
                 
 
 
