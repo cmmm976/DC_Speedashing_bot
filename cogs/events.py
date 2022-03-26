@@ -88,40 +88,6 @@ class Events(commands.Cog):
         # Indicate that the bot has successfully booted up
         print(f"Ready: {self.bot.user} | Servers: {len(self.bot.guilds)}")
 
-    
-    @commands.Cog.listener()
-    async def on_presence_update(self, before, after):
-        global cooldown
-        cooldown = []
-        if before in cooldown:
-            return
-        cooldown.append(before)
-        await asyncio.sleep(3600*2) # here you can change how long the cooldown should be
-        cooldown.remove(before)
-
-        streaming_role = after.guild.get_role(945020788090765343)
-        streams_channel = self.bot.get_channel(386680735374901249)
-
-        try:
-            activities = [activity for activity in after.activities]
-        except:
-            pass
-        for activity in activities:
-            if not (activity.type is discord.ActivityType.streaming):
-                print("{} activity_type (should be non streaming) ->".format(after.name), activity.type)
-                # User is doing something other than streaming
-                if streaming_role in after.roles:
-                    print(f"{after.display_name} has stopped streaming")
-                    await after.remove_roles(streaming_role)
-            else:
-                print("{} activity_type in else (should be streaming) -> ".format(after.name), activity.type)
-                if streaming_role not in after.roles and activity.game == "Dead Cells":
-                    # If they don't have the role, give it to them
-                    # If they have it, we already know they're streaming so we don't need to do anything
-                    print(f"{after.display_name} has started streaming")
-                    await after.add_roles(streaming_role)
-                    await streams_channel.send(content="{} **is streaming Dead Cells !**\n**{}** - {}".format(after.mention,activity.name, activity.url))
-                    break
 
     @commands.Cog.listener()
     async def on_message(self, message):
