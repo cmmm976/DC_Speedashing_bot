@@ -69,6 +69,7 @@ class Speedrun(commands.Cog):
             world_records = {"Any% Warpless": {"Any% WR" :1}, 
                             "Any% Warpless (Seeded)": {"Any% WR" :1},
                             "Any% Warps": {"Warps WR" :1},
+                            "Any% Warps (Seeded)": {"Warps WR" :1},
                             "Fresh File (<2.1)": {"FF WR" :1},
                             "Fresh File (2.1+)": {"FF WR" :1},
                             "0-5BC Glitchless": {"0-5BC WR" :1},
