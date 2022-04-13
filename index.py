@@ -39,7 +39,7 @@ async def post_new_runs():
     if  new_call != newest_run:
         print("New run !")
         newest_run = new_call
-        with open('newest_run.json', 'w') as outfile:
+        with open('data/newest_run.json', 'w') as outfile:
             json.dump({"newest_run": newest_run}, outfile)
         
         embed_run = discord.Embed.from_dict(dict(fields=[{"name": key, "value": newest_run[key], "inline": True} for key in newest_run]))
