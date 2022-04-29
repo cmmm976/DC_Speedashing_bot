@@ -30,7 +30,8 @@ async def post_new_runs():
     new_runs_channel = bot.get_channel(944573175050690590)
 
     newest_run = ''
-    with open('newest_run.json') as f:
+    with open('data/newest_run.json', "r") as f:
+        print("Opening newest_run.json !")
         file = json.load(f)
         newest_run = file["newest_run"]
 
@@ -40,6 +41,7 @@ async def post_new_runs():
         print("New run !")
         newest_run = new_call
         with open('data/newest_run.json', 'w') as outfile:
+            print("Dumping newest run!")
             json.dump({"newest_run": newest_run}, outfile)
         
         embed_run = discord.Embed.from_dict(dict(fields=[{"name": key, "value": newest_run[key], "inline": True} for key in newest_run]))
