@@ -172,17 +172,23 @@ class Speedrun(commands.Cog):
         # Opens and reads the json file.
         with open('data/streamers.json', 'r') as file:
             streamers = json.loads(file.read())
-
+        
         # Gets the users id that called the command or the user in arguement
-        user_id = user.id
-        # Assigns their given twitch_name to their discord id and adds it to the streamers.json.
-        streamers[user_id] = twitch_name
+        user_id = str(user.id)
 
-        # Adds the changes we made to the json file.
-        with open('data/streamers.json', 'w') as file:
-            file.write(json.dumps(streamers))
-        # Tells the user it worked.
-        await ctx.send(f"Added {twitch_name} for {user} to the notifications list.")
+        print(user_id)
+
+        if user_id not in streamers:
+            # Assigns their given twitch_name to their discord id and adds it to the streamers.json.
+            streamers[user_id] = twitch_name
+            # Adds the changes we made to the json file.
+            with open('data/streamers.json', 'w') as file:
+                file.write(json.dumps(streamers))
+            # Tells the user it worked.
+            await ctx.send(f"Added {twitch_name} for {user} to the notifications list.")
+        else:
+            await ctx.send(f"{user}'s Twitch is already in the notifications list.")
+
 
 def setup(bot):
     bot.add_cog(Speedrun(bot))

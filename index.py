@@ -76,9 +76,9 @@ async def twitch_live_notifs():
 
     if streamers is not None:
             # Gets guild, 'twitch streams' channel, and streaming role.
-            DC_SPEEDASHING_GUILD = bot.get_guild(931247875776729198)
-            STREAMS_CHANNEL = bot.get_channel(969877924620689438)
-            STREAMS_ROLE = discord.utils.get(DC_SPEEDASHING_GUILD.roles, name="Stream")
+            DC_SPEEDASHING_GUILD = bot.get_guild(386680192615055361)
+            STREAMS_CHANNEL = bot.get_channel(386680735374901249)
+            STREAMS_ROLE = discord.utils.get(DC_SPEEDASHING_GUILD.roles, name="Streaming")
 
             # Loops through the json and gets the key,value which in this case is the user_id and twitch_name of
             # every item in the json.
@@ -93,37 +93,15 @@ async def twitch_live_notifs():
                 if user_live:
                     # Checks to see if the live message has already been sent.
                     async for message in STREAMS_CHANNEL.history(limit=200):
-                        print("yes")
                         twitch_embed = discord.Embed(
-                                title=f":red_circle: **LIVE**\n{user.name} is now streaming on Twitch! \n \n {stream_data['data'][0]['title']}",
+                                title=f":red_circle: **LIVE** :red_circle:\n{stream_data['data'][0]['title']}",
                                 color=0xac1efb,
                                 url=f'\nhttps://www.twitch.tv/{twitch_name}'
                             )
-                        twitch_embed.add_field(
-                              name = '**Game**',
-                              value = stream_data['data'][0]['game_name'], 
-                              inline = True
-                            )
-                        twitch_embed.add_field(
-                              name = '**Viewers**',
-                              value = stream_data['data'][0]['viewer_count'], 
-                              inline = True
-                            )
-                        twitch_embed.set_author(
-                                name = str(twitch_name),
-                                icon_url = stream_data['data'][0]['thumbnail_url']
-                                                            )
                         twitch_embed.set_image(url = f'https://www.twitch.tv/{twitch_name}')
-                        print("yes2")
-                        try:
-                            embed_title = twitch_embed.title
-                            embed_description = twitch_embed.description
-                        except Exception as e:
-                            break
-                        print("yes3")
 
                         # If it has, break the loop (do nothing).
-                        if embed_title == message.embeds[0].title:
+                        if user.mention in message.content:
                             break
                         # If it hasn't, assign them the streaming role and send the message.
                         else:
@@ -135,26 +113,21 @@ async def twitch_live_notifs():
                                     await member.add_roles(STREAMS_ROLE)
                             # Sends the live notification to the 'twitch streams' channel then breaks the loop.
                             await STREAMS_CHANNEL.send(
-                                content = f"{user.name} is now streaming on Twitch! Go check it out: https://www.twitch.tv/{twitch_name}", embed=twitch_embed)
+                                content = f"{user.mention} is now streaming Dead Cells! Go check it out: https://www.twitch.tv/{twitch_name}", embed=twitch_embed)
                             print(f"{user} started streaming. Sending a notification.")
                             break
                 # If they aren't live do this:
                 else:
                     # Gets all the members in your guild.
-                    async for member in guild.fetch_members(limit=None):
+                    async for member in DC_SPEEDASHING_GUILD.fetch_members(limit=None):
                         # If one of the id's of the members in your guild matches the one from the json and they're not
                         # live, remove the streaming role.
                         if member.id == int(user_id):
                             await member.remove_roles(STREAMS_ROLE)
                     # Checks to see if the live notification was sent.
                     async for message in STREAMS_CHANNEL.history(limit=200):
-                        try:
-                            embed_title = message.embeds[0].title
-                            embed_description = message.embeds[0].description
-                        except Exception as e:
-                            break
                         # If it was, delete it.
-                        if user.mention in embed_title and "is now playing" in embed_title:
+                        if user.mention in message.content and "is now streaming" in message.content:
                             print(f"{user} stopped streaming. Removing the notification.")
                             await message.delete()
     
