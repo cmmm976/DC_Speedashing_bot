@@ -1,9 +1,12 @@
 import discord
+import datetime
+import random
+import json
+
 from utils import default
 from discord.ext import commands, tasks
 from utils.src import sort_embeddings, get_PBs, get_category_WRs, VALUES, VARIABLES, CATEGORIES, SUB_CATEGORIES
-import datetime
-import random
+
 
 class Speedrun(commands.Cog):
     def __init__(self, bot):
@@ -14,7 +17,7 @@ class Speedrun(commands.Cog):
     @commands.guild_only()
     async def runner(self, ctx, *, user):
         """ Get runner personal bests"""
-        user = user or ctx.author
+        user = user or user
 
         """Get runner infos from SRC API"""
         
@@ -40,7 +43,7 @@ class Speedrun(commands.Cog):
     @commands.guild_only()
     async def givemeroles(self, ctx, user : discord.Member = None):
         """Gives you the accurate roles based on your personal bests (see #role-pls for requirements)"""
-        user = user or ctx.author
+        user = user or user
 
         async with ctx.channel.typing():
             runner_PBs = get_PBs(user)
@@ -159,6 +162,33 @@ class Speedrun(commands.Cog):
             casuls = f.readlines()
         
         await ctx.send(content=random.choice(casuls))
+
+   
+    @commands.command(aliases=["live_notifs"])
+    async def add_twitch(self, ctx, twitch_name, user : discord.Member = None):
+        """Command to make the bot knows your Twitch so it can announce your streams!"""
+        user = user or ctx.author
+
+        # Opens and reads the json file.
+        with open('data/streamers.json', 'r') as file:
+            streamers = json.loads(file.read())
+        
+        # Gets the users id that called the command or the user in arguement
+        user_id = str(user.id)
+
+        print(user_id)
+
+        if user_id not in streamers:
+            # Assigns their given twitch_name to their discord id and adds it to the streamers.json.
+            streamers[user_id] = twitch_name
+            # Adds the changes we made to the json file.
+            with open('data/streamers.json', 'w') as file:
+                file.write(json.dumps(streamers))
+            # Tells the user it worked.
+            await ctx.send(f"Added {twitch_name} for {user} to the notifications list.")
+        else:
+            await ctx.send(f"{user}'s Twitch is already in the notifications list.")
+
 
 def setup(bot):
     bot.add_cog(Speedrun(bot))

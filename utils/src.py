@@ -1,7 +1,8 @@
-from unicodedata import category
+import datetime
+
 import srcomapi, srcomapi.datatypes as dt
 from discord.ext.commands import errors
-import datetime
+
 
 VALUES = {
     "Seeded": "p12j3x4q",
@@ -157,6 +158,13 @@ def get_category_WRs(user_category):
                 wr["Sub category"] = wr["Sub category"][0]
     
     return world_records
+
+# Returns true if user is streaming, false if not.
+def check_if_streaming(twitch_api, streamer_name: str) -> tuple:
+    stream = twitch_api.get_streams(user_login=streamer_name)
+
+    return len(stream['data']) == 1, stream
+
 
 api = srcomapi.SpeedrunCom()
 api.debug = 1

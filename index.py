@@ -1,11 +1,14 @@
 import os
 import discord
+import json
+
 
 from utils import default
 from utils.data import Bot, HelpFormat
 from discord.ext import tasks
-from utils.src import get_new_runs
-import json
+from utils.src import get_new_runs, check_if_streaming
+
+from twitchAPI.twitch import Twitch
 
 
 config = default.config()
@@ -46,21 +49,87 @@ async def post_new_runs():
         
         embed_run = discord.Embed.from_dict(dict(fields=[{"name": key, "value": newest_run[key], "inline": True} for key in newest_run]))
 
-        runner_is_in_server = discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"]) != None
+        runner_is_in_server = discord.utils.get(new_runs_STREAMS_CHANNEL.guild.members, name=newest_run["Runner"]) != None
         
         if runner_is_in_server:
-            await new_runs_channel.send(
+            await new_runs_STREAMS_CHANNEL.send(
                 "**A new run has been verified !**\n"
-                "GG **<@{}>** for PB ! :partying_face:".format(discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"]).id), embed=embed_run
+                "GG **<@{}>** for PB ! :partying_face:".format(discord.utils.get(new_runs_STREAMS_CHANNEL.guild.members, name=newest_run["Runner"]).id), embed=embed_run
             )
         else:
-            await new_runs_channel.send(
+            await new_runs_STREAMS_CHANNEL.send(
                 "**A new run has been verified !**\n"
                 "GG **{}** for PB ! :partying_face:".format(newest_run["Runner"]), embed=embed_run
             )
             
-        await new_runs_channel.send(newest_run["Video Link"])
+        await new_runs_STREAMS_CHANNEL.send(newest_run["Video Link"])
 
+@tasks.loop(seconds=10)
+async def twitch_live_notifs():
+    CLIENT_ID = os.getenv("CLIENT_ID")
+    CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+    
+    twitch_api = Twitch(CLIENT_ID, CLIENT_SECRET)
+
+    with open("data/streamers.json", "r", encoding="UTF-8") as f:
+        streamers = json.loads(f.read())
+
+    if streamers is not None:
+            # Gets guild, 'twitch streams' channel, and streaming role.
+            DC_SPEEDASHING_GUILD = bot.get_guild(386680192615055361)
+            STREAMS_CHANNEL = bot.get_channel(386680735374901249)
+            STREAMS_ROLE = discord.utils.get(DC_SPEEDASHING_GUILD.roles, name="Streaming")
+
+            # Loops through the json and gets the key,value which in this case is the user_id and twitch_name of
+            # every item in the json.
+            for user_id, twitch_name in streamers.items():
+                print("checking" + " " + str(twitch_name))
+                # Takes the given twitch_name and checks it using the check_if_streaming function to see if they're live.
+                # Returns either true or false.
+                user_live, stream_data = check_if_streaming(twitch_api, twitch_name)
+                # Gets the user using the collected user_id in the json
+                user = bot.get_user(int(user_id))
+                # Makes sure they're live
+                if user_live:
+                    # Checks to see if the live message has already been sent.
+                    async for message in STREAMS_CHANNEL.history(limit=200):
+                        twitch_embed = discord.Embed(
+                                title=f":red_circle: **LIVE** :red_circle:\n{stream_data['data'][0]['title']}",
+                                color=0xac1efb,
+                                url=f'\nhttps://www.twitch.tv/{twitch_name}'
+                            )
+                        twitch_embed.set_image(url = f'https://www.twitch.tv/{twitch_name}')
+
+                        # If it has, break the loop (do nothing).
+                        if user.mention in message.content:
+                            break
+                        # If it hasn't, assign them the streaming role and send the message.
+                        else:
+                            # Gets all the members in your guild.
+                            async for member in DC_SPEEDASHING_GUILD.fetch_members(limit=None):
+                                # If one of the id's of the members in your guild matches the one from the json and
+                                # they're live, give them the streaming role.
+                                if member.id == int(user_id):
+                                    await member.add_roles(STREAMS_ROLE)
+                            # Sends the live notification to the 'twitch streams' channel then breaks the loop.
+                            await STREAMS_CHANNEL.send(
+                                content = f"{user.mention} is now streaming Dead Cells! Go check it out: https://www.twitch.tv/{twitch_name}", embed=twitch_embed)
+                            print(f"{user} started streaming. Sending a notification.")
+                            break
+                # If they aren't live do this:
+                else:
+                    # Gets all the members in your guild.
+                    async for member in DC_SPEEDASHING_GUILD.fetch_members(limit=None):
+                        # If one of the id's of the members in your guild matches the one from the json and they're not
+                        # live, remove the streaming role.
+                        if member.id == int(user_id):
+                            await member.remove_roles(STREAMS_ROLE)
+                    # Checks to see if the live notification was sent.
+                    async for message in STREAMS_CHANNEL.history(limit=200):
+                        # If it was, delete it.
+                        if user.mention in message.content and "is now streaming" in message.content:
+                            print(f"{user} stopped streaming. Removing the notification.")
+                            await message.delete()
     
 
 @post_new_runs.before_loop
@@ -68,7 +137,13 @@ async def before_post_new_runs():
     await bot.wait_until_ready()
     print("Ready to post new runs")
 
+@twitch_live_notifs.before_loop
+async def before_twitch_live_notifs():
+    await bot.wait_until_ready()
+    print("Ready to post Twitch live notifs")
+
 post_new_runs.start()
+twitch_live_notifs.start()
 
 try:
     bot.run(config["token"])
