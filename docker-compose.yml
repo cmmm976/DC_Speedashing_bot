@@ -6,4 +6,4 @@ services:
     build: .
     volumes:
       - ./config.json:/dc_speedashing_bot/config.json
-    network_mode : bridge
+    restart: always
