@@ -8,4 +8,7 @@ WORKDIR /dc_speedashing_bot
 COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
+ENV CLIENT_ID ${CLIENT_ID}
+ENV CLIENT_SECRET ${CLIENT_SECRET}
+
 CMD ["python", "index.py"]

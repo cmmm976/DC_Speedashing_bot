@@ -4,6 +4,9 @@ services:
   bot:
     container_name: "dc_speedashing_bot"
     build: .
+    environment:
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
     volumes:
       - ./config.json:/dc_speedashing_bot/config.json
     restart: always
