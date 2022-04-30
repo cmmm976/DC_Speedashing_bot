@@ -49,20 +49,20 @@ async def post_new_runs():
         
         embed_run = discord.Embed.from_dict(dict(fields=[{"name": key, "value": newest_run[key], "inline": True} for key in newest_run]))
 
-        runner_is_in_server = discord.utils.get(new_runs_STREAMS_CHANNEL.guild.members, name=newest_run["Runner"]) != None
+        runner_is_in_server = discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"]) != None
         
         if runner_is_in_server:
-            await new_runs_STREAMS_CHANNEL.send(
+            await new_runs_channel.send(
                 "**A new run has been verified !**\n"
-                "GG **<@{}>** for PB ! :partying_face:".format(discord.utils.get(new_runs_STREAMS_CHANNEL.guild.members, name=newest_run["Runner"]).id), embed=embed_run
+                "GG **<@{}>** for PB ! :partying_face:".format(discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"]).id), embed=embed_run
             )
         else:
-            await new_runs_STREAMS_CHANNEL.send(
+            await new_runs_channel.send(
                 "**A new run has been verified !**\n"
                 "GG **{}** for PB ! :partying_face:".format(newest_run["Runner"]), embed=embed_run
             )
             
-        await new_runs_STREAMS_CHANNEL.send(newest_run["Video Link"])
+        await new_runs_channel.send(newest_run["Video Link"])
 
 @tasks.loop(seconds=10)
 async def twitch_live_notifs():
@@ -104,7 +104,7 @@ async def twitch_live_notifs():
                                 color=0xac1efb,
                                 url=f'\nhttps://www.twitch.tv/{twitch_name}'
                             )
-                        twitch_embed.set_image(url = f'https://www.twitch.tv/{twitch_name}')
+                        twitch_embed.set_image(url = twitch.get_streams(user_login=streamer)["data"][0]["thumbnail_url"].split("-{width}")[0]+".jpg")
 
                         # If it has, break the loop (do nothing).
                         if user.mention in message.content:
