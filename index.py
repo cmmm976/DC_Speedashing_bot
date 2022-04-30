@@ -89,8 +89,13 @@ async def twitch_live_notifs():
                 user_live, stream_data = check_if_streaming(twitch_api, twitch_name)
                 # Gets the user using the collected user_id in the json
                 user = bot.get_user(int(user_id))
-                # Makes sure they're live
-                if user_live:
+                #Gets game of the stream
+                game = stream_data["data"][0]["game_name"]
+
+                print(game)
+
+                # Makes sure they're live and streaming Dead Cells
+                if user_live and game == "Dead Cells":
                     # Checks to see if the live message has already been sent.
                     async for message in STREAMS_CHANNEL.history(limit=200):
                         twitch_embed = discord.Embed(
@@ -102,6 +107,7 @@ async def twitch_live_notifs():
 
                         # If it has, break the loop (do nothing).
                         if user.mention in message.content:
+                            print("Announcement already posted, leaving.")
                             break
                         # If it hasn't, assign them the streaming role and send the message.
                         else:
