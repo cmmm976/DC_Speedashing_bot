@@ -53,7 +53,7 @@ async def post_new_runs():
 
         #checking if PB already posted
         async for message in new_runs_channel.history(limit=1):
-            if newest_run["Runner"] in message: #if already posting, we're breaking from function (do nothing)
+            if newest_run["Runner"] in message.content: #if already posting, we're breaking from function (do nothing)
                 print("PB already posted, leaving.")
                 break
             
