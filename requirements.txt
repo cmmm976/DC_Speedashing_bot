@@ -1,5 +1,5 @@
-git+https://github.com/Pycord-Development/pycord
-psutil
+py-cord==2.0.0b7
+psutil==5.9.0
 timeago==1.0.13
 srcomapi==0.3.3
 

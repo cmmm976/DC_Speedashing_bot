@@ -88,14 +88,5 @@ class Events(commands.Cog):
         # Indicate that the bot has successfully booted up
         print(f"Ready: {self.bot.user} | Servers: {len(self.bot.guilds)}")
 
-
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        last_message = (await message.channel.history(limit=2).flatten())[1]
-        if last_message.content == message.content:
-            await message.delete()
-
-
-
 def setup(bot):
     bot.add_cog(Events(bot))
