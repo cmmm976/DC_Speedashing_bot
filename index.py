@@ -90,9 +90,10 @@ async def twitch_live_notifs():
                 # Gets the user using the collected user_id in the json
                 user = bot.get_user(int(user_id))
                 #Gets game of the stream
-                game = stream_data["data"][0]["game_name"]
-
-                print(game)
+                try:
+                    game = stream_data["data"][0]["game_name"]
+                except IndexError:
+                    game = None
 
                 # Makes sure they're live and streaming Dead Cells
                 if user_live and game == "Dead Cells":
