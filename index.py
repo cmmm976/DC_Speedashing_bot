@@ -50,19 +50,25 @@ async def post_new_runs():
         embed_run = discord.Embed.from_dict(dict(fields=[{"name": key, "value": newest_run[key], "inline": True} for key in newest_run]))
 
         runner_is_in_server = discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"]) != None
-        
-        if runner_is_in_server:
-            await new_runs_channel.send(
-                "**A new run has been verified !**\n"
-                "GG **<@{}>** for PB ! :partying_face:".format(discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"]).id), embed=embed_run
-            )
-        else:
-            await new_runs_channel.send(
-                "**A new run has been verified !**\n"
-                "GG **{}** for PB ! :partying_face:".format(newest_run["Runner"]), embed=embed_run
-            )
+
+        #checking if PB already posted
+        async for message in new_runs_channel.history(limit=1):
+            if newest_run["Runner"] in message: #if already posting, we're breaking from function (do nothing)
+                print("PB already posted, leaving.")
+                break
             
-        await new_runs_channel.send(newest_run["Video Link"])
+            if runner_is_in_server:
+                await new_runs_channel.send(
+                    "**A new run has been verified !**\n"
+                    "GG **<@{}>** for PB ! :partying_face:".format(discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"]).id), embed=embed_run
+                )
+            else:
+                await new_runs_channel.send(
+                    "**A new run has been verified !**\n"
+                    "GG **{}** for PB ! :partying_face:".format(newest_run["Runner"]), embed=embed_run
+                )
+                
+            await new_runs_channel.send(newest_run["Video Link"])
 
 @tasks.loop(seconds=10)
 async def twitch_live_notifs():
@@ -89,6 +95,7 @@ async def twitch_live_notifs():
                 user_live, stream_data = check_if_streaming(twitch_api, twitch_name)
                 # Gets the user using the collected user_id in the json
                 user = bot.get_user(int(user_id))
+                
                 #Gets game of the stream
                 try:
                     game = stream_data["data"][0]["game_name"]
@@ -104,7 +111,7 @@ async def twitch_live_notifs():
                                 color=0xac1efb,
                                 url=f'\nhttps://www.twitch.tv/{twitch_name}'
                             )
-                        twitch_embed.set_image(url = twitch_api.get_streams(user_login=streamer)["data"][0]["thumbnail_url"].split("-{width}")[0]+".jpg")
+                        twitch_embed.set_image(url = twitch_api.get_streams(user_login=twitch_name)["data"][0]["thumbnail_url"].split("-{width}")[0]+".jpg")
 
                         # If it has, break the loop (do nothing).
                         if user.mention in message.content:
