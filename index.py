@@ -1,7 +1,7 @@
 import os
 import discord
 import json
-
+from time import sleep
 
 from utils import default
 from utils.data import Bot, HelpFormat
@@ -111,7 +111,13 @@ async def twitch_live_notifs():
                                 color=0xac1efb,
                                 url=f'\nhttps://www.twitch.tv/{twitch_name}'
                             )
-                        twitch_embed.set_image(url = twitch_api.get_streams(user_login=twitch_name)["data"][0]["thumbnail_url"].split("-{width}")[0]+".jpg")
+                        try:
+                            twitch_embed.set_image(url = twitch_api.get_streams(user_login=twitch_name)["data"][0]["thumbnail_url"].split("-{width}")[0]+".jpg")
+                        except IndexError:
+                            print("Wasn't ready to post yet, trying again")
+                            wait.sleep(10)
+                            twitch_embed.set_image(url = twitch_api.get_streams(user_login=twitch_name)["data"][0]["thumbnail_url"].split("-{width}")[0]+".jpg")
+
 
                         # If it has, break the loop (do nothing).
                         if user.mention in message.content:
