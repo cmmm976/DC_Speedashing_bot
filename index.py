@@ -2,6 +2,7 @@ import os
 import discord
 import json
 from time import sleep
+from datetime import datetime
 
 from utils import default
 from utils.data import Bot, HelpFormat
@@ -93,6 +94,10 @@ async def twitch_live_notifs():
                 # Takes the given twitch_name and checks it using the check_if_streaming function to see if they're live.
                 # Returns either true or false.
                 user_live, stream_data = check_if_streaming(twitch_api, twitch_name)
+
+                
+
+
                 # Gets the user using the collected user_id in the json
                 user = bot.get_user(int(user_id))
                 
@@ -118,9 +123,16 @@ async def twitch_live_notifs():
                             sleep(10)
                             twitch_embed.set_image(url = twitch_api.get_streams(user_login=twitch_name)["data"][0]["thumbnail_url"].split("-{width}")[0]+".jpg")
 
-
+                        #Gets timestamp of stream start
+                        stream_start = datetime.strptime(stream["started_at"],"%Y-%m-%dT%H:%M:%SZ").replace().timestamp()
+                        #compute time after stream_start in seconds
+                        time_after_stream_start = datetime.now().timestamp() - stream_start
+                        
                         # If it has, break the loop (do nothing).
-                        if user.mention in message.content:
+                        #Also check if stream starts for longer than 1 minute. 
+                        # If yes, break the loop (do nothing). 
+                        # Avoid spam if multiple streamers active
+                        if user.mention in message.content or time_after_stream_start > 60:
                             print("Announcement already posted, leaving.")
                             break
                         # If it hasn't, assign them the streaming role and send the message.
