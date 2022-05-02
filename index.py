@@ -115,7 +115,7 @@ async def twitch_live_notifs():
                             twitch_embed.set_image(url = twitch_api.get_streams(user_login=twitch_name)["data"][0]["thumbnail_url"].split("-{width}")[0]+".jpg")
                         except IndexError:
                             print("Wasn't ready to post yet, trying again")
-                            wait.sleep(10)
+                            sleep(10)
                             twitch_embed.set_image(url = twitch_api.get_streams(user_login=twitch_name)["data"][0]["thumbnail_url"].split("-{width}")[0]+".jpg")
 
 
