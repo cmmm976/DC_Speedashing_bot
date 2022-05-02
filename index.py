@@ -63,7 +63,7 @@ async def post_new_runs():
             if runner_is_in_server:
                 await new_runs_channel.send(
                     "**A new run has been verified !**\n"
-                    "GG **<@{}>** for PB ! :partying_face:".format(runner_discord_user.id), embed=embed_run
+                    "GG **{}** for PB ! :partying_face:".format(runner_discord_user.mention), embed=embed_run
                 )
             else:
                 await new_runs_channel.send(
@@ -126,7 +126,7 @@ async def twitch_live_notifs():
                             twitch_embed.set_image(url = twitch_api.get_streams(user_login=twitch_name)["data"][0]["thumbnail_url"].split("-{width}")[0]+".jpg")
 
                         #Gets timestamp of stream start
-                        stream_start = datetime.strptime(stream_data["started_at"],"%Y-%m-%dT%H:%M:%SZ").replace().timestamp()
+                        stream_start = datetime.strptime(stream_data["data"][0]["started_at"],"%Y-%m-%dT%H:%M:%SZ").replace().timestamp()
                         #compute time after stream_start in seconds
                         time_after_stream_start = datetime.now().timestamp() - stream_start
                         
