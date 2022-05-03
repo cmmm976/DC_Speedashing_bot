@@ -55,7 +55,7 @@ async def post_new_runs():
         runner_discord_user = discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"])
 
         #checking if PB already posted
-        async for message in new_runs_channel.history(limit=1):
+        async for message in new_runs_channel.history(limit=2):
             if runner_discord_user.mention in message.content: #if already posting, we're breaking from function (do nothing)
                 print("PB already posted, leaving.")
                 break
