@@ -126,9 +126,8 @@ async def twitch_live_notifs():
                         try:
                             twitch_embed.set_image(url = twitch_api.get_streams(user_login=twitch_name)["data"][0]["thumbnail_url"].split("-{width}")[0]+".jpg")
                         except IndexError:
-                            print("Wasn't ready to post yet, trying again")
-                            sleep(10)
-                            twitch_embed.set_image(url = twitch_api.get_streams(user_login=twitch_name)["data"][0]["thumbnail_url"].split("-{width}")[0]+".jpg")
+                            print("Stream thumbnail not found")
+                            twitch_embed.set_image(url = "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fpunishedbacklog.com%2Fwp-content%2Fuploads%2F2017%2F11%2FDead-Cells-featured-image.jpg&f=1&nofb=1")
 
                         #Gets timestamp of stream start
                         stream_start = datetime.strptime(stream_data["data"][0]["started_at"],"%Y-%m-%dT%H:%M:%SZ").replace().timestamp()
