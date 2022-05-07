@@ -56,10 +56,15 @@ async def post_new_runs():
 
         #checking if PB already posted
         async for message in new_runs_channel.history(limit=2):
-            if runner_discord_user.mention in message.content: #if already posting, we're breaking from function (do nothing)
-                print("PB already posted, leaving.")
-                break
-            
+            try:
+                if runner_discord_user.mention in message.content: #if already posting, we're breaking from function (do nothing)
+                    print("PB already posted, leaving.")
+                    break
+            except AttributeError:
+                if newest_run["Runner"] in message.content:
+                    print("PB already posted, leaving.")
+                    break
+                    
             if runner_is_in_server:
                 await new_runs_channel.send(
                     "**A new run has been verified !**\n"
@@ -112,7 +117,7 @@ async def twitch_live_notifs():
                 # Makes sure they're live and streaming Dead Cells
                 if user_live and game == "Dead Cells":
                     # Checks to see if the live message has already been sent.
-                    async for message in STREAMS_CHANNEL.history(limit=200):
+                    async for message in STREAMS_CHANNEL.history(limit=50):
                         twitch_embed = discord.Embed(
                                 title=f":red_circle: **LIVE** :red_circle:\n{stream_data['data'][0]['title']}",
                                 color=0xac1efb,
@@ -159,7 +164,7 @@ async def twitch_live_notifs():
                         if member.id == int(user_id):
                             await member.remove_roles(STREAMS_ROLE)
                     # Checks to see if the live notification was sent.
-                    async for message in STREAMS_CHANNEL.history(limit=200):
+                    async for message in STREAMS_CHANNEL.history(limit=50):
                         # If it was, delete it.
                         if user.mention in message.content and "is now streaming" in message.content:
                             print(f"{user} stopped streaming. Removing the notification.")
@@ -177,7 +182,12 @@ async def before_twitch_live_notifs():
     print("Ready to post Twitch live notifs")
 
 post_new_runs.start()
-twitch_live_notifs.start()
+
+try:
+    twitch_live_notifs.start()
+except Exception as e:
+    print(e)
+    twitch_live_notifs.start()
 
 try:
     bot.run(config["token"])
