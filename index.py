@@ -107,7 +107,7 @@ async def twitch_live_notifs():
                 # Makes sure they're live and streaming Dead Cells
                 if user_live and game == "Dead Cells":
                     # Checks to see if the live message has already been sent.
-                    async for message in STREAMS_CHANNEL.history(limit=50):
+                    async for message in STREAMS_CHANNEL.history(limit=1):
                         twitch_embed = discord.Embed(
                                 title=f":red_circle: **LIVE** :red_circle:\n{stream_data['data'][0]['title']}",
                                 color=0xac1efb,
@@ -153,7 +153,7 @@ async def twitch_live_notifs():
                         if member.id == int(user_id):
                             await member.remove_roles(STREAMS_ROLE)
                     # Checks to see if the live notification was sent.
-                    async for message in STREAMS_CHANNEL.history(limit=50):
+                    async for message in STREAMS_CHANNEL.history(limit=1):
                         # If it was, delete it.
                         if user.mention in message.content and "is now streaming" in message.content:
                             print(f"{user} stopped streaming. Removing the notification.")
