@@ -54,29 +54,19 @@ async def post_new_runs():
 
         runner_discord_user = discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"])
 
-        #checking if PB already posted
-        async for message in new_runs_channel.history(limit=2):
-            try:
-                if runner_discord_user.mention in message.content: #if already posting, we're breaking from function (do nothing)
-                    print("PB already posted, leaving.")
-                    break
-            except AttributeError:
-                if newest_run["Runner"] in message.content:
-                    print("PB already posted, leaving.")
-                    break
-                    
-            if runner_is_in_server:
-                await new_runs_channel.send(
-                    "**A new run has been verified !**\n"
-                    "GG **{}** for PB ! :partying_face:".format(runner_discord_user.mention), embed=embed_run
-                )
-            else:
-                await new_runs_channel.send(
-                    "**A new run has been verified !**\n"
-                    "GG **{}** for PB ! :partying_face:".format(newest_run["Runner"]), embed=embed_run
-                )
-                
-            await new_runs_channel.send(newest_run["Video Link"])
+        
+        if runner_is_in_server:
+            await new_runs_channel.send(
+                "**A new run has been verified !**\n"
+                "GG **{}** for PB ! :partying_face:".format(runner_discord_user.mention), embed=embed_run
+            )
+        else:
+            await new_runs_channel.send(
+                "**A new run has been verified !**\n"
+                "GG **{}** for PB ! :partying_face:".format(newest_run["Runner"]), embed=embed_run
+            )
+            
+        await new_runs_channel.send(newest_run["Video Link"])
 
 @tasks.loop(seconds=10)
 async def twitch_live_notifs():
