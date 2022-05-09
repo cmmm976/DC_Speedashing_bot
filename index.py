@@ -151,7 +151,11 @@ async def twitch_live_notifs():
                         # If one of the id's of the members in your guild matches the one from the json and they're not
                         # live, remove the streaming role.
                         if member.id == int(user_id):
-                            await member.remove_roles(STREAMS_ROLE)
+                            try:
+                                await member.remove_roles(STREAMS_ROLE)
+                            except discord.errors.DiscordServerError as e:
+                                print(e)
+                                continue
                     # Checks to see if the live notification was sent.
                     async for message in STREAMS_CHANNEL.history(limit=1):
                         # If it was, delete it.
