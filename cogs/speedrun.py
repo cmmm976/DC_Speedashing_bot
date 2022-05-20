@@ -61,8 +61,8 @@ class Speedrun(commands.Cog):
 
             thresholds = {"Any% Warpless": {"Legend": 4*60, "Lightspeed IRL": 5*60, "Go Fast Club": 6*60}, 
                         "Any% Warpless (Seeded)": {"Legend": (2+(20/60))*60, "Lightspeed IRL": 3*60, "Go Fast Club": 3.5*60}, 
-                        "Any% Warps": {"Legend": 35, "Lightspeed IRL": 45, "Go Fast Club": 50},
-                        "Any% Warps (Seeded)": {"Legend": 25, "Lightspeed IRL": 30, "Go Fast Club": 35},
+                        "Any% Warps (+60 FPS)": {"Legend": 35, "Lightspeed IRL": 45, "Go Fast Club": 50},
+                        "Any% Warps (Seeded) (+60 FPS)": {"Legend": 25, "Lightspeed IRL": 30, "Go Fast Club": 35},
                         "Fresh File (<2.1)": {"Legend": 14*60, "Lightspeed IRL": 15*60, "Go Fast Club": 17*60}, 
                         "Fresh File (2.1+)": {"Legend": 10*60, "Lightspeed IRL": 11*60, "Go Fast Club": 12*60},
                         "0-5BC Glitchless": {"Legend": 2.5*60*60, "Lightspeed IRL": 3*60*60, "Go Fast Club": 3.75*60*60},
