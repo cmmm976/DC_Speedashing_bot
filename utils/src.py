@@ -79,7 +79,7 @@ def get_PBs(runner):
                     category += " (2.1+)" if patch_is_21_and_higher else " (<2.1)" 
             elif category == "5BC":
                     patch_is_25_and_higher = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
-                    is_nmg = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
+                    is_nmg = pb['run']['values']['78919kqn'] == 'mlng34j1'
 
                     category += " (2.5+)" if patch_is_25_and_higher else " (<2.5)"
                     category += " (NMG)" if patch_is_25_and_higher else ""
@@ -111,7 +111,7 @@ def get_new_runs():
         category += " (2.1+)" if patch_is_21_and_higher else " (<2.1)" 
     elif category == "5BC":
         patch_is_25_and_higher = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
-        is_nmg = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
+        is_nmg = pb['run']['values']['78919kqn'] == 'mlng34j1'
         category += " (2.5+)" if patch_is_25_and_higher else " (<2.5)"
         category += " (NMG)" if patch_is_25_and_higher else ""
     elif category == "Any% Warps":
