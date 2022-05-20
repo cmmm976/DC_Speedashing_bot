@@ -75,22 +75,22 @@ def get_PBs(runner):
         
         if game_is_main_dead_cells:
             if category == "Fresh File":
-                    patch_is_21_and_higher = pb['run']['values']['6njzm5pl'] == 'mln9x50q'
+                    patch_is_21_and_higher = newest_run.values['6njzm5pl'] == 'mln9x50q'
                     category += " (2.1+)" if patch_is_21_and_higher else " (<2.1)" 
             elif category == "5BC":
-                    patch_is_25_and_higher = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
-                    is_nmg = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
+                    patch_is_25_and_higher = newest_run.values['ylp7pkrl'] == 'p12p7j4q'
+                    is_nmg = newest_run.values['ylp7pkrl'] == 'p12p7j4q'
 
                     category += " (2.5+)" if patch_is_25_and_higher else " (<2.5)"
                     category += " (NMG)" if patch_is_25_and_higher else ""
             elif category == "Any% Warps":
-                    framerate_above_60 = pb['run']['values']["onvv0q5n"] == "z19ow341"
+                    framerate_above_60 = newest_run.values["onvv0q5n"] == "z19ow341"
                     category += " (+60 FPS)" if framerate_above_60 else " (<60 FPS)"
 
-            seeded = pb['run']['values']['e8m661ql'] == 'p12j3x4q'
+            seeded = newest_run.values['e8m661ql'] == 'p12j3x4q'
         else:
             if category == "Boss Rush":
-                fatal_falls = pb['run']['values']["0nwp6258"] == "81w684vl"
+                fatal_falls = newest_run.values["0nwp6258"] == "81w684vl"
                 category += " (Fatal Falls)" if fatal_falls else " (QotS)"
 
         if seeded and not misc_category:
@@ -105,17 +105,18 @@ def get_new_runs():
     print(newest_run) #you get the embed values of the run object by printing it somehow, probably related to cache idk
 
     category = newest_run.category.name
+    seeded = newest_run.values['e8m661ql'] == 'p12j3x4q'
     
     if category == "Fresh File":
-        patch_is_21_and_higher = pb['run']['values']['6njzm5pl'] == 'mln9x50q'
+        patch_is_21_and_higher = newest_run.values['6njzm5pl'] == 'mln9x50q'
         category += " (2.1+)" if patch_is_21_and_higher else " (<2.1)" 
     elif category == "5BC":
-        patch_is_25_and_higher = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
-        is_nmg = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
+        patch_is_25_and_higher = newest_run.values['ylp7pkrl'] == 'p12p7j4q'
+        is_nmg = newest_run.values['ylp7pkrl'] == 'p12p7j4q'
         category += " (2.5+)" if patch_is_25_and_higher else " (<2.5)"
         category += " (NMG)" if patch_is_25_and_higher else ""
     elif category == "Any% Warps":
-        framerate_above_60 = pb['run']['values']["onvv0q5n"] == "z19ow341"
+        framerate_above_60 = newest_run.values["onvv0q5n"] == "z19ow341"
         category += " (+60 FPS)" if framerate_above_60 else " (<60 FPS)"
 
     result = {
