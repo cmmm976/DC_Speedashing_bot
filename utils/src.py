@@ -7,32 +7,37 @@ from discord.ext.commands import errors
 VALUES = {
     "Seeded": "p12j3x4q",
     "Unseeded": "z19e788q",
-    "Seeded (extensions)" : "klrknyo1",
-    "Unseeded (extensions)" : "jqz2kx2q",
     "<2.1": "4qy90n4l",
     "2.1+": "mln9x50q",
-    "<2.3": "z19kne8q",
-    "2.3+": "p12p7j4q",
+    "<2.5": "z19kne8q",
+    "2.5+": "p12p7j4q",
+    "Unrestricted": "81027o2q",
+    "NMG": "mlng34j1",
+    "60+ FPS": "z19ow341",
+    "<60 FPS": "p12y8n2q",
+    "QatS": "5lm7nrml",
+    "Fatal Falls": "81w684vl"
     
 }
 
 SUB_CATEGORIES = {
-    "Version": {"Fresh File": "6njzm5pl", "5BC": "ylp7pkrl"},
-    "Seeded": {"Main": "e8m661ql", "Extensions": "yn2wwp2n"}   
+    "Version": {"Fresh File": "6njzm5pl", "5BC": "ylp7pkrl"}
 }
 
 CATEGORIES = {
     "Any% Warpless": "7kjp314k",
     "Any% Warps": "xk9rz14k",
     "Fresh File": "9d864o62",
-    "5BC": "9kv7g60k",
+    "0-5BC Glitchless": "824q6zwk",
+    "5BC": "9kv7g60k"
 }
 
 VARIABLES = {
     "Any% Warpless": {"id": "7kjp314k", "sub_categories": {"Seeded": {"id": "e8m661ql", "values": {"Seeded": "p12j3x4q", "Unseeded": "z19e788q"}}} },
-    "Any% Warps": {"id": "xk9rz14k", "sub_categories": {"Seeded": {"id": "e8m661ql", "values": {"Seeded": "p12j3x4q", "Unseeded": "z19e788q"}}} },
+    "Any% Warps": {"id": "xk9rz14k", "sub_categories": {"Seeded": {"id": "e8m661ql", "values": {"Seeded": "p12j3x4q", "Unseeded": "z19e788q"}}, "Framerate": {"id": "onvv0q5n", "values": {"<60 FPS": "p12y8n2q", "+60 FPS": "z19ow341"}}} },
     "Fresh File": {"id": "9d864o62", "sub_categories": {"Seeded": {"id": "e8m661ql", "values": {"Seeded": "p12j3x4q", "Unseeded": "z19e788q"}}, "Version": {"id": "6njzm5pl", "values": {"<2.1": "4qy90n4l", "2.1+": "mln9x50q"}}} },
-    "5BC": {"id": "9kv7g60k", "sub_categories": {"Seeded": {"id": "e8m661ql", "values": {"Seeded": "p12j3x4q", "Unseeded": "z19e788q"}}, "Version": {"id": "6njzm5pl", "values": {"<2.3": "z19kne8q", "2.3+": "p12p7j4q"}}} }
+    "5BC": {"id": "9kv7g60k", "sub_categories": {"Seeded": {"id": "e8m661ql", "values": {"Seeded": "p12j3x4q", "Unseeded": "z19e788q"}}, "Version": {"id": "ylp7pkrl", "values": {"<2.5": "z19kne8q", "2.5+": "p12p7j4q"}}, "Glitched": {"id": "78919kqn", "values": {"Unrestricted": "81027o2q", "NMG": "mlng34j1"}}},  },
+    "0-5BC Glitchless": {"id": "824q6zwk", "sub_categories": {"Seeded": {"id": "e8m661ql", "values": {"Seeded": "p12j3x4q", "Unseeded": "z19e788q"}}} }
 }
 
 
@@ -64,24 +69,30 @@ def get_PBs(runner):
             continue 
         
         category = dt.Category(api, data=pb['category']['data']).name
-        misc_category = category in ["4BC (obsolete)","Any% (Early Access)", "Fresh File (Early Access)", "Any% Seeded (obsolete)"]
+        misc_category = category in ["4BC","Any% Early Access", "Fresh File Early Access", "Any% Seeded Early Access"]
         
         seeded = False
+        
         if game_is_main_dead_cells:
-            
             if category == "Fresh File":
-                patch_is_21_and_higher = pb['run']['values']['6njzm5pl'] == 'mln9x50q'
-                category += " (2.1+)" if patch_is_21_and_higher else " (<2.1)"
-            
+                    patch_is_21_and_higher = pb['run']['values']['6njzm5pl'] == 'mln9x50q'
+                    category += " (2.1+)" if patch_is_21_and_higher else " (<2.1)" 
             elif category == "5BC":
-                patch_is_23_and_higher = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
-                category += " (2.3+)" if patch_is_23_and_higher else " (<2.3)"
-            
+                    patch_is_25_and_higher = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
+                    is_nmg = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
+
+                    category += " (2.5+)" if patch_is_25_and_higher else " (<2.5)"
+                    category += " (NMG)" if patch_is_25_and_higher else ""
+            elif category == "Any% Warps":
+                    framerate_above_60 = pb['run']['values']["onvv0q5n"] == "z19ow341"
+                    category += " (+60 FPS)" if framerate_above_60 else " (<60 FPS)"
+
             seeded = pb['run']['values']['e8m661ql'] == 'p12j3x4q'
-        
-        if not game_is_main_dead_cells and len(pb['run']['values']) > 0:
-            seeded = pb['run']['values']['yn2wwp2n'] == 'klrknyo1'
-        
+        else:
+            if category == "Boss Rush":
+                fatal_falls = pb['run']['values']["0nwp6258"] == "81w684vl"
+                category += " (Fatal Falls)" if fatal_falls else " (QotS)"
+
         if seeded and not misc_category:
             runner_PBs[category + " (Seeded)"] = pb
         elif not seeded and not misc_category:
@@ -94,14 +105,18 @@ def get_new_runs():
     print(newest_run) #you get the embed values of the run object by printing it somehow, probably related to cache idk
 
     category = newest_run.category.name
-    seeded = newest_run.values['e8m661ql'] == 'p12j3x4q'
     
     if category == "Fresh File":
-        patch_is_21_and_higher = newest_run.values['6njzm5pl'] == 'mln9x50q'
-        category += " (2.1+)" if patch_is_21_and_higher else " (<2.1)"
+        patch_is_21_and_higher = pb['run']['values']['6njzm5pl'] == 'mln9x50q'
+        category += " (2.1+)" if patch_is_21_and_higher else " (<2.1)" 
     elif category == "5BC":
-        patch_is_23_and_higher = newest_run.values['ylp7pkrl'] == 'p12p7j4q'
-        category += " (2.3+)" if patch_is_23_and_higher else " (<2.3)"
+        patch_is_25_and_higher = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
+        is_nmg = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
+        category += " (2.5+)" if patch_is_25_and_higher else " (<2.5)"
+        category += " (NMG)" if patch_is_25_and_higher else ""
+    elif category == "Any% Warps":
+        framerate_above_60 = pb['run']['values']["onvv0q5n"] == "z19ow341"
+        category += " (+60 FPS)" if framerate_above_60 else " (<60 FPS)"
 
     result = {
         "Runner": newest_run.players[0].name,
