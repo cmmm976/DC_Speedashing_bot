@@ -78,11 +78,11 @@ def get_PBs(runner):
                     patch_is_21_and_higher = newest_run.values['6njzm5pl'] == 'mln9x50q'
                     category += " (2.1+)" if patch_is_21_and_higher else " (<2.1)" 
             elif category == "5BC":
-                    patch_is_25_and_higher = newest_run.values['ylp7pkrl'] == 'p12p7j4q'
-                    is_nmg = newest_run.values['ylp7pkrl'] == 'p12p7j4q'
+                    patch_is_25_and_higher = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
+                    is_nmg = pb['run']['values']['78919kqn'] == 'mlng34j1'
 
                     category += " (2.5+)" if patch_is_25_and_higher else " (<2.5)"
-                    category += " (NMG)" if patch_is_25_and_higher else ""
+                    category += " (NMG)" if is_nmg else ""
             elif category == "Any% Warps":
                     framerate_above_60 = newest_run.values["onvv0q5n"] == "z19ow341"
                     category += " (+60 FPS)" if framerate_above_60 else " (<60 FPS)"

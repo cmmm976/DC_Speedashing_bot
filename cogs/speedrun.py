@@ -60,30 +60,38 @@ class Speedrun(commands.Cog):
                 simplified_PBs[category] = {"Time": runner_PBs[category]["run"]["times"]["primary_t"], "Rank": runner_PBs[category]["place"]}
 
             thresholds = {"Any% Warpless": {"Legend": 4*60, "Lightspeed IRL": 5*60, "Go Fast Club": 6*60}, 
-                        "Any% Warpless (Seeded)": {"Legend": 2.5*60, "Lightspeed IRL": 3*60, "Go Fast Club": 3.5*60}, 
-                        "Any% Warps": {"Legend": 45, "Lightspeed IRL": 50, "Go Fast Club": 60},
+                        "Any% Warpless (Seeded)": {"Legend": (2+(20/60))*60, "Lightspeed IRL": 3*60, "Go Fast Club": 3.5*60}, 
+                        "Any% Warps (+60 FPS)": {"Legend": 35, "Lightspeed IRL": 45, "Go Fast Club": 50},
+                        "Any% Warps (+60 FPS) (Seeded)": {"Legend": 25, "Lightspeed IRL": 30, "Go Fast Club": 35},
                         "Fresh File (<2.1)": {"Legend": 14*60, "Lightspeed IRL": 15*60, "Go Fast Club": 17*60}, 
-                        "Fresh File (2.1+)": {"Legend": 11*60, "Lightspeed IRL": 12*60, "Go Fast Club": 13*60},
-                        "0-5BC Glitchless": {"Legend": 2.5*60*60, "Lightspeed IRL": 3*60*60},
-                        "5BC (<2.3)": {"Legend": 10*60, "Lightspeed IRL": 12*60},
-                        "5BC No Major Glitches": {"Legend": 20*60}
+                        "Fresh File (2.1+)": {"Legend": 10*60, "Lightspeed IRL": 11*60, "Go Fast Club": 12*60},
+                        "0-5BC Glitchless": {"Legend": 2.5*60*60, "Lightspeed IRL": 3*60*60, "Go Fast Club": 3.75*60*60},
+                        "5BC (<2.5)": {"Legend": 9*60, "Lightspeed IRL": 10*60, "Lightspeed IRL": 11*60},
+                        "5BC (2.5+)": {"Legend": 10*60, "Lightspeed IRL": 11*60, "Lightspeed IRL": 13*60},
+                        "5BC (<2.5) (NMG)": {"Legend": 20*60},
+                        "5BC (2.5+) (NMG)": {"Legend": 18*60}
                         }
 
             world_records = {"Any% Warpless": {"Any% WR" :1}, 
                             "Any% Warpless (Seeded)": {"Any% WR" :1},
-                            "Any% Warps": {"Warps WR" :1},
-                            "Any% Warps (Seeded)": {"Warps WR" :1},
+                            "Any% Warps (60+ FPS)": {"Warps WR" :1},
+                            "Any% Warps (60+ FPS) (Seeded)": {"Warps WR" :1},
                             "Fresh File (<2.1)": {"FF WR" :1},
                             "Fresh File (2.1+)": {"FF WR" :1},
                             "0-5BC Glitchless": {"0-5BC WR" :1},
-                            "5BC (<2.3)": {"5BC WR" :1},
-                            "5BC (2.3+)": {"5BC WR" :1},
-                            "5BC No Major Glitches": {"5BC WR" :1}
+                            "5BC (<2.5)": {"5BC WR" :1},
+                            "5BC (2.5+)": {"5BC WR" :1},
+                            "All Bosses": {"All Bosses WR" :1},
+                            "Boss Rush (QatS)": {"Boss Rush WR" :1},
+                            "Boss Rush (Fatal Falls)": {"Boss Rush WR" :1},
+                            "All Runes": {"All Runes WR" :1},
+                            "Reverse Rune Order": {"Reverse Rune Order WR" :1},
+                            "Cursed Sword Glitchless": {"Cursed WR" :1},
                             }
 
             
             threshold_roles = {"Legend": False, "Lightspeed IRL": False, "Go Fast Club": False}
-            wr_roles = {"Any% WR": False, "Warps WR": False, "FF WR": False, "5BC WR": False, "0-5BC WR": False}
+            wr_roles = {list(x.keys())[0]:False for x in world_records.values()}
             nb_thresholds_meet = {"Legend": 0, "Lightspeed IRL": 0, "Go Fast Club": 0}
             nb_thresholds_needed = {"Legend": 2, "Lightspeed IRL": 1, "Go Fast Club": 1}
 
