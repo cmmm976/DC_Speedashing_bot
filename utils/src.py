@@ -50,9 +50,12 @@ def sort_embeddings(embeddings, nb_categories):
         temp_value = embeddings.pop(nb_categories*2+i)
         embeddings.insert(3*i+2,temp_value)
 
-def get_PBs(runner):
+def get_PBs(runner) -> tuple:
+    """Interrogates SRC API to get Dead Cells runner's PBs formated in a dict and his SRC profile link
+    The dict and SRC are encapsulated in a tuple"""
     try:
-        runner_id =  api.get("users?lookup={}".format(runner))[0]['id']
+        runner = api.get("users?lookup={}".format(runner))[0]
+        runner_id, runner_weblink =  (runner["id"], runner["weblink"])
     except IndexError:
         raise errors.UserInputError("I haven't found this runner :pensive:\n"
                                     "Make sure you haven't mispelled their SRC username."
@@ -75,7 +78,7 @@ def get_PBs(runner):
         
         if game_is_main_dead_cells:
             if category == "Fresh File":
-                    patch_is_21_and_higher = newest_run.values['6njzm5pl'] == 'mln9x50q'
+                    patch_is_21_and_higher = pb['run']['values']['6njzm5pl'] == 'mln9x50q'
                     category += " (2.1+)" if patch_is_21_and_higher else " (<2.1)" 
             elif category == "5BC":
                     patch_is_25_and_higher = pb['run']['values']['ylp7pkrl'] == 'p12p7j4q'
@@ -84,13 +87,13 @@ def get_PBs(runner):
                     category += " (2.5+)" if patch_is_25_and_higher else " (<2.5)"
                     category += " (NMG)" if is_nmg else ""
             elif category == "Any% Warps":
-                    framerate_above_60 = newest_run.values["onvv0q5n"] == "z19ow341"
+                    framerate_above_60 = pb['run']['values']["onvv0q5n"] == "z19ow341"
                     category += " (+60 FPS)" if framerate_above_60 else " (<60 FPS)"
 
-            seeded = newest_run.values['e8m661ql'] == 'p12j3x4q'
+            seeded = pb['run']['values']['e8m661ql'] == 'p12j3x4q'
         else:
             if category == "Boss Rush":
-                fatal_falls = newest_run.values["0nwp6258"] == "81w684vl"
+                fatal_falls = pb['run']['values']["0nwp6258"] == "81w684vl"
                 category += " (Fatal Falls)" if fatal_falls else " (QotS)"
 
         if seeded and not misc_category:
@@ -98,7 +101,7 @@ def get_PBs(runner):
         elif not seeded and not misc_category:
             runner_PBs[category] = pb
     
-    return runner_PBs
+    return runner_PBs, runner_weblink
 
 def get_new_runs():
     newest_run = api.search(srcomapi.datatypes.Run, {"status":"verified","game":"nd2ee5ed","orderby":"verify-date","direction":"desc"})[0]
