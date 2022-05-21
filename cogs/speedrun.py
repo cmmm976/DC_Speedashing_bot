@@ -52,7 +52,7 @@ class Speedrun(commands.Cog):
         user = user or user
 
         async with ctx.channel.typing():
-            runner_PBs = get_PBs(user)
+            runner_PBs, runner_weblink = get_PBs(user)
 
             has_Dead_Cells_runs = len(runner_PBs) > 0
 
