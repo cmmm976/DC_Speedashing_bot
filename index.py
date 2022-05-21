@@ -68,7 +68,7 @@ async def post_new_runs():
             
         await new_runs_channel.send(newest_run["Video Link"])
 
-@tasks.loop(seconds=10)
+@tasks.loop(minutes=1)
 async def twitch_live_notifs():
     CLIENT_ID = os.getenv("CLIENT_ID")
     CLIENT_SECRET = os.getenv("CLIENT_SECRET")
@@ -128,7 +128,7 @@ async def twitch_live_notifs():
                         #Also check if stream starts for longer than 1 minute. 
                         # If yes, break the loop (do nothing). 
                         # Avoid spam if multiple streamers active
-                        if user.mention in message.content or time_after_stream_start > 60:
+                        if user.mention in message.content or time_after_stream_start > 120:
                             print("Announcement already posted, leaving.")
                             break
                         # If it hasn't, assign them the streaming role and send the message.
