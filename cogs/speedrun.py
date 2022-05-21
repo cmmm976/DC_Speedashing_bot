@@ -19,9 +19,9 @@ class Speedrun(commands.Cog):
         """ Get runner personal bests"""
         user = user or user
 
-        """Get runner infos from SRC API"""
+        #Get runner infos from SRC API
         
-        runner_PBs = get_PBs(user)
+        runner_PBs, runner_weblink = get_PBs(user)
 
         has_Dead_Cells_runs = len(runner_PBs) > 0
 
@@ -34,10 +34,16 @@ class Speedrun(commands.Cog):
         embeddings["fields"].extend([{"name": "Time", "value": str(datetime.timedelta(seconds=runner_PBs[x]["run"]["times"]["primary_t"])).rstrip("000"), "inline": True} for x in runner_PBs.keys()])
         
         sort_embeddings(embeddings["fields"],len(runner_PBs.keys()))
+        
+        message_content = f"ℹ **{user}**'s PBs"
+        #Discord cant'show more than 25 fields on an embed messages, we're posting SRC profile link instead
+        if len(embeddings["fields"]) > 24:
+            embeddings["fields"][24] = {"name": "More on", "value": "{}".format(runner_weblink)}
+            message_content = f"ℹ Last **{user}**'s PBs"
 
         embed = discord.Embed.from_dict(embeddings)
 
-        await ctx.send(content=f"ℹ **{user}** speedrun profile", embed=embed)
+        await ctx.send(content=f"ℹ Last **{user}**'s PBs", embed=embed)
 
     @commands.command(aliases=['roles'])
     @commands.guild_only()
