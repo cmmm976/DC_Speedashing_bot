@@ -82,11 +82,14 @@ class Speedrun(commands.Cog):
                             "Any% Warpless (Seeded)": {"Any% WR" :1},
                             "Any% Warps (60+ FPS)": {"Warps WR" :1},
                             "Any% Warps (60+ FPS) (Seeded)": {"Warps WR" :1},
+                            "Any% Warps (<60 FPS)": {"Warps WR" :1},
+                            "Any% Warps (<60 FPS) (Seeded)": {"Warps WR" :1},
                             "Fresh File (<2.1)": {"FF WR" :1},
                             "Fresh File (2.1+)": {"FF WR" :1},
                             "0-5BC Glitchless": {"0-5BC WR" :1},
                             "5BC (<2.5)": {"5BC WR" :1},
                             "5BC (2.5+)": {"5BC WR" :1},
+                            "5BC (2.5+) (NMG)": {"5BC WR" :1},
                             "All Bosses": {"All Bosses WR" :1},
                             "Boss Rush (QatS)": {"Boss Rush WR" :1},
                             "Boss Rush (Fatal Falls)": {"Boss Rush WR" :1},
@@ -105,20 +108,18 @@ class Speedrun(commands.Cog):
                 for role in nb_thresholds_meet:
                         try:
                             nb_thresholds_meet[role] += 1 if simplified_PBs[category]["Time"] < thresholds[category][role] else 0
-                            print(category, simplified_PBs[category]["Time"], simplified_PBs[category]["Time"] < thresholds[category][role])
                         except KeyError:
                             continue
             
             for role in nb_thresholds_meet:
                 threshold_roles[role] = nb_thresholds_meet[role] >= nb_thresholds_needed[role]
-                print(role, nb_thresholds_meet[role], nb_thresholds_meet[role] >= nb_thresholds_needed[role])
 
             for category in world_records:
                 for role in wr_roles:
                     if wr_roles[role] != True:
                         try:
                             wr_roles[role] = simplified_PBs[category]["Rank"] == world_records[category][role]
-                        except KeyError:
+                        except KeyError as e:
                             continue 
             
             roles_to_remove = [discord.utils.get(ctx.guild.roles, name=role) for role in wr_roles if not wr_roles[role]]

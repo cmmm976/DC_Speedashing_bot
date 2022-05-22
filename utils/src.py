@@ -88,7 +88,7 @@ def get_PBs(runner) -> tuple:
                     category += " (NMG)" if is_nmg else ""
             elif category == "Any% Warps":
                     framerate_above_60 = pb['run']['values']["onvv0q5n"] == "z19ow341"
-                    category += " (+60 FPS)" if framerate_above_60 else " (<60 FPS)"
+                    category += " (60+ FPS)" if framerate_above_60 else " (<60 FPS)"
 
             seeded = pb['run']['values']['e8m661ql'] == 'p12j3x4q'
         else:
