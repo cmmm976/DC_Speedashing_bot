@@ -133,17 +133,21 @@ async def twitch_live_notifs():
                             break
                         # If it hasn't, assign them the streaming role and send the message.
                         else:
-                            # Gets all the members in your guild.
-                            async for member in DC_SPEEDASHING_GUILD.fetch_members(limit=None):
-                                # If one of the id's of the members in your guild matches the one from the json and
-                                # they're live, give them the streaming role.
-                                if member.id == int(user_id):
-                                    await member.add_roles(STREAMS_ROLE)
-                            # Sends the live notification to the 'twitch streams' channel then breaks the loop.
-                            await STREAMS_CHANNEL.send(
-                                content = f"{user.mention} is now streaming Dead Cells! Go check it out: https://www.twitch.tv/{twitch_name}", embed=twitch_embed)
-                            print(f"{user} started streaming. Sending a notification.")
-                            break
+                            try:
+                                # Gets all the members in your guild.
+                                async for member in DC_SPEEDASHING_GUILD.fetch_members(limit=None):
+                                    # If one of the id's of the members in your guild matches the one from the json and
+                                    # they're live, give them the streaming role.
+                                    if member.id == int(user_id):
+                                        await member.add_roles(STREAMS_ROLE)
+                                # Sends the live notification to the 'twitch streams' channel then breaks the loop.
+                                await STREAMS_CHANNEL.send(
+                                    content = f"{user.mention} is now streaming Dead Cells! Go check it out: https://www.twitch.tv/{twitch_name}", embed=twitch_embed)
+                                print(f"{user} started streaming. Sending a notification.")
+                                break
+                            except discord.errors.DiscordServerError as e:
+                                print(e)
+                                time.sleep(30)
                 # If they aren't live do this:
                 else:
                     # Gets all the members in your guild.
@@ -175,12 +179,8 @@ async def before_twitch_live_notifs():
     print("Ready to post Twitch live notifs")
 
 post_new_runs.start()
+twitch_live_notifs.start()
 
-try:
-    twitch_live_notifs.start()
-except Exception as e:
-    print(e)
-    twitch_live_notifs.start()
 
 try:
     bot.run(config["token"])
