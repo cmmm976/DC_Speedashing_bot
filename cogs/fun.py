@@ -1,4 +1,5 @@
 import random
+from threading import get_ident
 import discord
 import secrets
 import asyncio
@@ -207,6 +208,32 @@ class Fun_Commands(commands.Cog):
             await ctx.send(f"{slotmachine} 2 in a row, you won! 🎉")
         else:
             await ctx.send(f"{slotmachine} No match, you lost 😢")
+
+    @commands.command(aliases=["hyperspeed"])
+    async def hyper(self, ctx):
+        """
+        Posts a GIF of an hyperspeed
+        """
+        if not permissions.can_handle(ctx, "attach_files"):
+            return await ctx.send("I cannot send images here ;-;")
+
+        bio = BytesIO(await http.get("https://j.gifs.com/Dq2oW6.gif", res_method="read"))
+        await ctx.send(file=discord.File(bio, filename="hyperspeed.gif"))
+
+    @commands.command(aliases=["thankyoudc", "thanksdc", "thanksdeadcells"])
+    async def thankyoudeadcells(self, ctx):
+        """ Posts a random GIF of a (legacy) very fair Dead Cells moment"""
+        if not permissions.can_handle(ctx, "attach_files"):
+            return await ctx.send("I cannot send images here ;-;")
+
+        ##open data/thank_you_dead_cells.txt
+        with open("data/thank_you_dead_cells.txt", "r") as f:
+            gifs = f.readlines()
+            
+        ##randomly select a line
+        gif = random.choice(gifs)
+        
+        await ctx.send(gif)
 
 
 def setup(bot):

@@ -147,7 +147,7 @@ async def twitch_live_notifs():
                                 break
                             except discord.errors.DiscordServerError as e:
                                 print(e)
-                                time.sleep(30)
+                                sleep(30)
                 # If they aren't live do this:
                 else:
                     # Gets all the members in your guild.
