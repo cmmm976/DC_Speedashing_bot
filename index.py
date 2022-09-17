@@ -31,7 +31,8 @@ for file in os.listdir("cogs"):
 
 @tasks.loop(seconds=60)
 async def post_new_runs():
-    new_runs_channel = bot.get_channel(944573175050690590)
+    # new_runs_channel = bot.get_channel(944573175050690590)
+    new_runs_channel = bot.get_channel(931584454156230687)
 
     newest_run = ''
     with open('data/newest_run.json', "r") as f:
@@ -56,8 +57,8 @@ async def post_new_runs():
 
         runner_discord_user = discord.utils.get(new_runs_channel.guild.members, name=runner)
 
-        async for message in new_runs_channel.history(limit=None):
-            if embed_run in message.embeds:
+        async for message in new_runs_channel.history(limit=1):
+            if newest_run["Video Link"] in message.content:
                 return
             if runner_is_in_server:
                 await new_runs_channel.send(
