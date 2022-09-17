@@ -50,23 +50,27 @@ async def post_new_runs():
         
         embed_run = discord.Embed.from_dict(dict(fields=[{"name": key, "value": newest_run[key], "inline": True} for key in newest_run]))
 
-        runner_is_in_server = discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"]) != None
+        runner = newest_run["Runner"]
 
-        runner_discord_user = discord.utils.get(new_runs_channel.guild.members, name=newest_run["Runner"])
+        runner_is_in_server = discord.utils.get(new_runs_channel.guild.members, name=runner) != None
 
-        
-        if runner_is_in_server:
-            await new_runs_channel.send(
-                "**A new run has been verified !**\n"
-                "GG **{}** for PB ! :partying_face:".format(runner_discord_user.mention), embed=embed_run
-            )
-        else:
-            await new_runs_channel.send(
-                "**A new run has been verified !**\n"
-                "GG **{}** for PB ! :partying_face:".format(newest_run["Runner"]), embed=embed_run
-            )
-            
-        await new_runs_channel.send(newest_run["Video Link"])
+        runner_discord_user = discord.utils.get(new_runs_channel.guild.members, name=runner)
+
+        async for message in new_runs_channel.history(limit=None):
+            if embed_run in message.embeds:
+                return
+            if runner_is_in_server:
+                await new_runs_channel.send(
+                    "**A new run has been verified !**\n"
+                    "GG **{}** for PB ! :partying_face:".format(runner_discord_user.mention), embed=embed_run
+                )
+            else:
+                await new_runs_channel.send(
+                    "**A new run has been verified !**\n"
+                    "GG **{}** for PB ! :partying_face:".format(runner), embed=embed_run
+                )
+                
+            await new_runs_channel.send(newest_run["Video Link"])
 
 @tasks.loop(minutes=1)
 async def twitch_live_notifs():
