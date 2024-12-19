@@ -1,0 +1,13 @@
+[project]
+name = "dc-speedashing-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9, <3.10"
+dependencies = [
+    "py-cord==2.0.0b7",
+    "psutil==5.9.0",
+    "timeago==1.0.13",
+    "srcomapi==0.3.3",
+    "twitchAPI==2.5.3"
+]

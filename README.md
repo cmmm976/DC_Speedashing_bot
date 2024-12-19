@@ -2,13 +2,18 @@
 
 A bot for the Dead Cells Speedrunning discord bot created from [AlexFlipnote](https://github.com/AlexFlipnote/) [discord_bot.py](https://github.com/AlexFlipnote/discord_bot.py)
 
-**Stack : Python 3.6+, Docker, OVH Bare Metal Cloud**
+**Stack : Python 3.9, Docker, OVH Bare Metal Cloud**
 
 # Setup
  * Clone the repo : `git clone https://github.com/cmmm976/DC_Speedashing_bot`
  * Create, configure your bot and and add a config.json file ([readme](https://github.com/AlexFlipnote/discord_bot.py#readme))
     * Be sure to enable all the Privileged Gateway Intents
- * Install the requirements `pip install -r requirements.txt`
+ * Install the requirements with :
+ ```
+ python -m venv .venv
+ source .venv/bin/activate
+ pip install -r requirements.txt
+ ```
 
 # Run it
 
